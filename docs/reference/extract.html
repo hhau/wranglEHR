@@ -6,7 +6,38 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract NHIC Events — extract • inspectEHR</title>
+<title>Extract &amp; Reshape Data from EMAP
+
+This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
+row per time per patient.
+
+The time unit is user definable, and set by the "cadance" argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.
+
+Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.
+
+Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.
+
+The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour. — extract • inspectEHR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -42,10 +73,65 @@
 
 
 
-<meta property="og:title" content="Extract NHIC Events — extract" />
-<meta property="og:description" content="Extracts NHIC events and appends them with the correct class for
-further processing. This is essentially the creator method for
-the S3 classes associated with the inspectEHR package" />
+<meta property="og:title" content="Extract &amp; Reshape Data from EMAP
+
+This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
+row per time per patient.
+
+The time unit is user definable, and set by the "cadance" argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.
+
+Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.
+
+Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.
+
+The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour. — extract" />
+<meta property="og:description" content="Extract &amp;amp; Reshape Data from EMAP
+This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
+row per time per patient.
+The time unit is user definable, and set by the &quot;cadance&quot; argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.
+Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.
+Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.
+The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -79,7 +165,7 @@ the S3 classes associated with the inspectEHR package" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">inspectEHR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.10.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.11.9000</span>
       </span>
     </div>
 
@@ -101,9 +187,6 @@ the S3 classes associated with the inspectEHR package" />
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/data_quality_report.html">How to make a data quality report</a>
-    </li>
     <li>
       <a href="../articles/extract_data.html">How to extract data using inspectEHR</a>
     </li>
@@ -133,61 +216,142 @@ the S3 classes associated with the inspectEHR package" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extract NHIC Events</h1>
+    <h1>Extract &amp; Reshape Data from EMAP
+
+This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
+row per time per patient.
+
+The time unit is user definable, and set by the "cadance" argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.
+
+Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.
+
+Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.
+
+The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour.</h1>
     <small class="dont-index">Source: <a href='https://github.com/CC-HIC/inspectEHR/blob/master/R/extract.R'><code>R/extract.R</code></a></small>
     <div class="hidden name"><code>extract.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extracts NHIC events and appends them with the correct class for
-further processing. This is essentially the creator method for
-the S3 classes associated with the inspectEHR package</p>
+    <p>Extract &amp; Reshape Data from EMAP</p>
+<p>This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
+row per time per patient.</p>
+<p>The time unit is user definable, and set by the "cadance" argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.</p>
+<p>Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.</p>
+<p>Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.</p>
+<p>The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>extract</span>(<span class='kw'>core_table</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>extract</span>(
+  <span class='no'>connection</span>,
+  <span class='no'>target_schema</span>,
+  <span class='kw'>visit_occurrence_ids</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>concept_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>rename</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>coalesce_rows</span> <span class='kw'>=</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='no'><a href='https://dplyr.tidyverse.org/reference/nth.html'>first</a></span>,
+  <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>5000</span>,
+  <span class='kw'>cadance</span> <span class='kw'>=</span> <span class='fl'>1</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>core_table</th>
-      <td><p>core table from make_core</p></td>
+      <th>connection</th>
+      <td><p>a EMAP database connection</p></td>
     </tr>
     <tr>
-      <th>input</th>
-      <td><p>the input variable of choice</p></td>
+      <th>target_schema</th>
+      <td><p>the target database schema</p></td>
+    </tr>
+    <tr>
+      <th>visit_occurrence_ids</th>
+      <td><p>an integer vector of episode_ids or NULL. If NULL
+(the default) then all visits are extracted.</p></td>
+    </tr>
+    <tr>
+      <th>concept_names</th>
+      <td><p>a vector of OMOP concept_ids to be extracted</p></td>
+    </tr>
+    <tr>
+      <th>rename</th>
+      <td><p>a character vector of names you want to relabel OMOP codes
+as, or NULL (the default) if you do not want to relabel. Given in the same
+order as <code>concept_names</code></p></td>
+    </tr>
+    <tr>
+      <th>coalesce_rows</th>
+      <td><p>a vector of summary functions that you want to summarise
+data that is contributed higher than your set cadance. Given in the same
+order as <code>concept_names</code></p></td>
+    </tr>
+    <tr>
+      <th>chunk_size</th>
+      <td><p>a chunking parameter to help speed up the function and
+manage memory constaints. The defaults work well for most desktop
+computers.</p></td>
+    </tr>
+    <tr>
+      <th>cadance</th>
+      <td><p>a numerical scalar &gt;= 0. Describes the base time unit to build
+each row, in divisions of an hour. For example: 1 = 1 hour, 0.5 = 30 mins,
+2 = 2 hourly. If cadance = 0, then the pricise datetime will be used to
+generate the time column. This is likely to generate a large table, so use
+cautiously.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tibble with 1 row per event</p>
+    <p>sparse tibble with hourly cadance as rows, and unique OMOP concepts
+  as columns.</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>db_pth</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span>(<span class='st'>"testdata/synthetic_db.sqlite3"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"inspectEHR"</span>)
-<span class='no'>ctn</span> <span class='kw'>&lt;-</span> <span class='fu'>connect</span>(<span class='kw'>sqlite_file</span> <span class='kw'>=</span> <span class='no'>db_pth</span>)
-<span class='no'>core</span> <span class='kw'>&lt;-</span> <span class='fu'>make_core</span>(<span class='no'>ctn</span>)
-<span class='fu'>extract</span>(<span class='no'>core</span>, <span class='kw'>input</span> <span class='kw'>=</span> <span class='st'>"NIHR_HIC_ICU_0073"</span>)</div><div class='output co'>#&gt; <span style='color: #555555;'># A tibble: 1,000 x 5</span><span>
-#&gt;    event_id site  code_name         episode_id value     
-#&gt;       </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>                  </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;chr&gt;</span><span>     
-#&gt; </span><span style='color: #555555;'> 1</span><span>    </span><span style='text-decoration: underline;'>29</span><span>582 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>626 8674351972
-#&gt; </span><span style='color: #555555;'> 2</span><span>    </span><span style='text-decoration: underline;'>29</span><span>595 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>639 4295442348
-#&gt; </span><span style='color: #555555;'> 3</span><span>    </span><span style='text-decoration: underline;'>29</span><span>596 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>640 3369135825
-#&gt; </span><span style='color: #555555;'> 4</span><span>    </span><span style='text-decoration: underline;'>29</span><span>597 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>641 5222379698
-#&gt; </span><span style='color: #555555;'> 5</span><span>    </span><span style='text-decoration: underline;'>29</span><span>598 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>642 4463215420
-#&gt; </span><span style='color: #555555;'> 6</span><span>    </span><span style='text-decoration: underline;'>29</span><span>599 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>643 7366572217
-#&gt; </span><span style='color: #555555;'> 7</span><span>    </span><span style='text-decoration: underline;'>29</span><span>600 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>644 2869432968
-#&gt; </span><span style='color: #555555;'> 8</span><span>    </span><span style='text-decoration: underline;'>29</span><span>601 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>645 7961536515
-#&gt; </span><span style='color: #555555;'> 9</span><span>    </span><span style='text-decoration: underline;'>29</span><span>602 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>646 1894163389
-#&gt; </span><span style='color: #555555;'>10</span><span>    </span><span style='text-decoration: underline;'>29</span><span>603 B     NIHR_HIC_ICU_0073      </span><span style='text-decoration: underline;'>13</span><span>647 6386822293
-#&gt; </span><span style='color: #555555;'># … with 990 more rows</span><span></div><div class='input'><span class='kw pkg'>DBI</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/DBI/man/dbDisconnect.html'>dbDisconnect</a></span>(<span class='no'>ctn</span>)</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>

@@ -27,7 +27,7 @@ remotes::install_github("CC-HIC/inspectEHR")
 
 Establish a database connection. You will most likely be working with sqlite as the postgres instance is confined to the UCL IDHS. inspectEHR ships with a synthetic database, that you can play around with. The content of the data is more or less nonsense, but it is structurally sound.
 
-```{r, message = FALSE}
+```{r, message = FALSE, eval = FALSE}
 library(inspectEHR)
 
 # Synthetic database ships with inspectEHR
@@ -39,7 +39,7 @@ Enter the fields you want to extract using HIC codes. See the cleanEHR repo for 
 
 It's best to separate out 1d (time invariant) and 2d (longitudinal) data.
 
-```{r}
+```{r, eval = FALSE}
 # Grab non-longitudinal (1d) data ----------------
 demo_codes <- tibble::tribble(
   ~hic_codes, ~short_name,
@@ -60,7 +60,7 @@ head(dtb)
 
 We can now extact 2d data. This will return a table with 1 row per patient per time unit specified in the cadance option. For example, a cadance of 1 will return a table with 1 row per patient per hour. This does not create a row if nothing was recorded, so the rows might run: 1, 2, 4, if nothing was recorded in hour 3. Note how a summary function can be provided to `coalese_rows`. This determines the behaviour when collapsing dataitems down into rows below the natural cadance of recording.
 
-```{r}
+```{r, eval = FALSE}
 # Grab longitudinal (2d) data ---------------------
 long_codes <- tibble::tribble(
   ~hic_codes, ~short_name, ~func,
@@ -89,7 +89,7 @@ ltb <- expand_missing(ltb)
 
 We can also pull out data at any arbitrary temporal resolution and custom define the behaviour for information recorded at resolution higher than you are sampling. For example, if heart rates are sampled every hour, and you want to pull out data every 6 hours, we need to know what action to take to collapse those heart rates into a single row. You can supply any custom summary function to the `coalese_rows` argument of `extract_timevarying`.
 
-```{r, message = FALSE}
+```{r, message = FALSE, eval = FALSE}
 ltb_2 <- extract_timevarying(
   ctn,
   episode_ids = 13639:13643,
