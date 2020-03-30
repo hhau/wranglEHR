@@ -16,4 +16,6 @@ a time series table with location data appended
 }
 \description{
 Takes a table created by \code{\link{extract}} and adds bed movement data.
+Please be aware, this may duplicate rows, if for example a patient moves
+several beds in the same hour.
 }

@@ -59,7 +59,7 @@
 #' @importFrom purrr map imap
 #' @importFrom lubridate now
 #' @importFrom rlang inform abort .data
-#' @importFrom dplyr first mutate select filter collect rename bind_rows
+#' @importFrom dplyr first mutate select filter collect rename bind_rows n
 #' @importFrom magrittr %>%
 #' @importFrom tibble tibble
 extract <- function(connection,
