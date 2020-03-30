@@ -73,14 +73,7 @@ extract <- function(connection,
 
   starting <- now()
   tbls <- retrieve_tables(connection, target_schema)
-  
-  if (!is.null(visit_occurrence_ids) &&
-      class(visit_occurrence_ids) != "integer") {
-    rlang::abort(
-      "`visit_occurrence_ids` must be given as NULL (the default)
-       or an integer vector")
-  }
-  
+
   if (!(class(cadance) == "numeric" && cadance >= 0)) {
     rlang::abort(
       "`cadance` must be given as a numeric scalar >= 0")
