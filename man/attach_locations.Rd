@@ -2,7 +2,7 @@
 % Please edit documentation in R/attach_locations.R
 \name{attach_locations}
 \alias{attach_locations}
-\title{Add movement data to extracted table}
+\title{Add bed movement data to an extracted table}
 \usage{
 attach_locations(connection, ltb)
 }
@@ -12,8 +12,8 @@ attach_locations(connection, ltb)
 \item{ltb}{a time series table produced from \code{\link{extract}}}
 }
 \value{
-a time series table with location data appendewd
+a time series table with location data appended
 }
 \description{
-Add movement data to extracted table
+Takes a table created by \code{\link{extract}} and adds bed movement data.
 }

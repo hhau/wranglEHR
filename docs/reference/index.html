@@ -99,10 +99,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extract_data.html">How to extract data using inspectEHR</a>
+      <a href="../articles/extract_data.html">How to extract data using wranglEHR</a>
     </li>
     <li>
-      <a href="../articles/overview.html">An overview of inspectEHR</a>
+      <a href="../articles/overview.html">An overview of wranglEHR</a>
     </li>
   </ul>
 </li>
@@ -145,56 +145,31 @@
         <td>
           <p><code><a href="attach_locations.html">attach_locations()</a></code> </p>
         </td>
-        <td><p>Add movement data to extracted table</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="expand_missing.html">expand_missing()</a></code> </p>
-        </td>
-        <td><p>Fill in 2d Table to make a Sparse Table</p></td>
+        <td><p>Add bed movement data to an extracted table</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="extract.html">extract()</a></code> </p>
         </td>
-        <td><p>Extract &amp; Reshape Data from EMAP
-
-This is the workhorse function that transcribes data from EMAP OPS from OMOP 
-CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
-row per time per patient.
-
-The time unit is user definable, and set by the "cadance" argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.
-
-Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.
-
-Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.
-
-The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour.</p></td>
+        <td><p>Extract &amp; Reshape Data from EMAP</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="inspectEHR.html">inspectEHR</a></code> </p>
+          <p><code><a href="process_all.html">process_all()</a></code> </p>
         </td>
-        <td><p>inspectEHR</p></td>
+        <td><p>Process all concepts within a group of visit_occurrences</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="process_item.html">process_item()</a></code> </p>
+        </td>
+        <td><p>Process a specific concept_id</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="regularise.html">regularise()</a></code> </p>
+        </td>
+        <td><p>Regularise an extracted table to a regular time cadance</p></td>
       </tr><tr>
         
         <td>
@@ -207,6 +182,12 @@ intensional behaviour.</p></td>
           <p><code><a href="round_any.html">round_any()</a></code> </p>
         </td>
         <td><p>Round any</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="wranglEHR.html">wranglEHR</a></code> </p>
+        </td>
+        <td><p>wranglEHR</p></td>
       </tr>
     </tbody>
     </table>

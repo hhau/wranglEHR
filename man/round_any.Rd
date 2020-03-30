@@ -12,7 +12,8 @@ round_any(x, accuracy = 1)
 \item{accuracy}{a numeric value specifying the base for rounding}
 }
 \value{
-a vector of the same length as \code{x} rounded to the defined accuracy
+a vector of the same length as \code{x} rounded to the defined
+  accuracy
 }
 \description{
 rounds a numeric value to any arbitrary degree of precision.

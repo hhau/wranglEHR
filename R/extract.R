@@ -1,4 +1,4 @@
-#' @title Extract & Reshape Data from EMAP
+#' Extract & Reshape Data from EMAP
 #'
 #' This is the workhorse function that transcribes data from EMAP OPS from OMOP 
 #' CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
@@ -36,7 +36,7 @@
 #' @param visit_occurrence_ids an integer vector of episode_ids or NULL. If NULL
 #'   (the default) then all visits are extracted.
 #' @param concept_names a vector of OMOP concept_ids to be extracted
-#' @param rename a character vector of names you want to relabel OMOP codes
+#' @param relabel a character vector of names you want to relabel OMOP codes
 #'   as, or NULL (the default) if you do not want to relabel. Given in the same
 #'   order as \code{concept_names}
 #' @param coalesce_rows a vector of summary functions that you want to summarise
@@ -58,39 +58,37 @@
 #'
 #' @importFrom purrr map imap
 #' @importFrom lubridate now
-#' @importFrom rlang inform
-#' @importFrom dplyr first
+#' @importFrom rlang inform abort .data
+#' @importFrom dplyr first mutate select filter collect rename bind_rows
+#' @importFrom magrittr %>%
+#' @importFrom tibble tibble
 extract <- function(connection,
-                                target_schema,
-                                visit_occurrence_ids = NULL,
-                                concept_names = NULL,
-                                rename = NULL,
-                                coalesce_rows = dplyr::first,
-                                chunk_size = 5000,
-                                cadance = 1) {
+                    target_schema,
+                    visit_occurrence_ids = NULL,
+                    concept_names = NULL,
+                    relabel = NULL,
+                    coalesce_rows = dplyr::first,
+                    chunk_size = 5000,
+                    cadance = 1) {
 
   starting <- now()
   tbls <- retrieve_tables(connection, target_schema)
   
-  # if (!is.null(visit_occurrence_ids) && class(visit_occurrence_ids) != "integer") {
-  #   rlang::abort(
-  #     "`visit_occurrence_ids` must be given as NULL (the default)
-  #      or an integer vector")
-  # }
-  
-  cadance_pos_num <- class(cadance) == "numeric" && cadance >= 0
-  cadance_timestamp <- cadance == "timestamp"
-  
-  if (!(cadance_pos_num || cadance_timestamp)) {
+  if (!is.null(visit_occurrence_ids) &&
+      class(visit_occurrence_ids) != "integer") {
     rlang::abort(
-      "`cadance` must be given as a numeric scalar >= 0
-       or the string 'timestamp'")
+      "`visit_occurrence_ids` must be given as NULL (the default)
+       or an integer vector")
+  }
+  
+  if (!(class(cadance) == "numeric" && cadance >= 0)) {
+    rlang::abort(
+      "`cadance` must be given as a numeric scalar >= 0")
   }
   
   params <- tibble::tibble(
     concept_names = as.integer(concept_names),
-    i_concept_names = paste0("i", concept_names),
-    short_names = rename,
+    short_names = relabel,
     func = c(coalesce_rows)
   )
   
@@ -195,6 +193,16 @@ extract <- function(connection,
 }
 
 
+#' Process all concepts within a group of visit_occurrences
+#'
+#' @param visit_id the visit_occurence_id to process
+#' @param dataitems the table to process
+#' @param visit_table a visit table constaining visit_start_datetime
+#' @param cadance the base cadance
+#' @param coalesce_rows a summary function
+#' 
+#' @importFrom dplyr filter select pull arrange full_join mutate rename
+#' @importFrom purrr imap reduce
 process_all <- function(visit_id,
                         dataitems,
                         visit_table,
@@ -228,6 +236,17 @@ process_all <- function(visit_id,
     arrange(time)
 }
 
+#' Process a specific concept_id
+#'
+#' @param dataitem base table
+#' @param var_name concept_id
+#' @param start_time start_datetime to zero from
+#' @param cadance base time cadance
+#' @param coalesce_rows summary function
+#' 
+#' @importFrom dplyr select filter pull mutate distinct rename
+#' @importFrom rlang !! :=
+#' @importFrom magrittr %>%
 process_item <- function(dataitem,
                          var_name,
                          start_time,
@@ -264,27 +283,31 @@ process_item <- function(dataitem,
 }
 
 
-#' Fill in 2d Table to make a Sparse Table
+#' Regularise an extracted table to a regular time cadance
 #'
-#' The extract_timevarying returns a non-sparse table (i.e. rows/hours with
-#' no recorded information for a patient are not presented in the table)
-#' This function serves to expand the table and fill missing rows with NAs.
-#' This is useful when working with most time-series aware stats packages
-#' that expect a regular cadance to the table.
+#' The \code{\link{extract}} function returns a non-sparse table (i.e.
+#' rows/hours with no recorded information for a patient are not presented in
+#' the table) This function serves to expand the table and fill missing rows
+#' with NAs. This is useful when working with most time-series aware stats
+#' packages that expect a regular cadance to the table.
 #'
-#' @param df a dense time series table produced from extract_timevarying
+#' @param df a dense time series table produced from \code{\link{extract}}
 #' @param cadance the cadance by which you want to expand the table
 #'   (default = 1 hour)
+#'   
+#' @importFrom dplyr select bind_rows left_join
+#' @importFrom purrr imap
+#' @importFrom tibble tibble
 #'
 #' @return a sparse time series table
 #' @export
-expand_missing <- function(df, cadance = 1) {
+regularise <- function(df, cadance = 1) {
   df %>%
-    select(episode_id, time) %>%
-    split(., .$episode_id) %>%
-    imap(function(base_table, epi_id) {
+    select(visit_occurrence_id, time) %>%
+    split(., .$visit_occurrence_id) %>%
+    imap(function(base_table, visit_id) {
       tibble(
-        episode_id = as.numeric(epi_id),
+        visit_occurrence_id = as.integer(visit_id),
         time = seq(
           min(base_table$time, 0),
           max(base_table$time, 0),
@@ -293,5 +316,5 @@ expand_missing <- function(df, cadance = 1) {
       )
     }) %>%
     bind_rows() %>%
-    left_join(df, by = c("episode_id", "time"))
+    left_join(df, by = c("visit_occurrence_id", "time"))
 }

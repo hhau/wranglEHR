@@ -50,13 +50,20 @@ ltb <- extract(
   target_schema = "ops_dev",
   visit_occurrence_ids = 600000:600005,
   concept_names = c(3013502, 44809212),
-  rename = c("spo2", "spo2_target"),
+  relabel = c("spo2", "spo2_target"),
   coalesce_rows = dplyr::first,
   chunk_size = 5000,
   cadance = 1
 )
 
 head(ltb)
+
+# Add in bed movement data
+ltb <- attach_locations(ctn, ltb)
+head(ltb)
+
+# Regularise the underlying time cadance of the table
+ltb <- regularise(ltb, cadance = 1)
 
 # Don't forget to switch of the lights after you leave
 DBI::dbDisconnect(ctn)

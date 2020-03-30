@@ -43,8 +43,7 @@
 
 
 <meta property="og:title" content="Retrieve Database Tables — retrieve_tables" />
-<meta property="og:description" content="Places all tables from the database connection in a list. This makes use of the tables
-in dplyr extremely easy." />
+<meta property="og:description" content="Places all tables from the database connection in a list." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -101,10 +100,10 @@ in dplyr extremely easy." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extract_data.html">How to extract data using inspectEHR</a>
+      <a href="../articles/extract_data.html">How to extract data using wranglEHR</a>
     </li>
     <li>
-      <a href="../articles/overview.html">An overview of inspectEHR</a>
+      <a href="../articles/overview.html">An overview of wranglEHR</a>
     </li>
   </ul>
 </li>
@@ -130,11 +129,10 @@ in dplyr extremely easy." />
     </div>
 
     <div class="ref-description">
-    <p>Places all tables from the database connection in a list. This makes use of the tables
-in dplyr extremely easy.</p>
+    <p>Places all tables from the database connection in a list.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>retrieve_tables</span>(<span class='no'>connection</span>, <span class='no'>schema</span>)</pre>
+    <pre class="usage"><span class='fu'>retrieve_tables</span>(<span class='no'>connection</span>, <span class='kw'>schema</span> <span class='kw'>=</span> <span class='st'>"ops_dev"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -142,6 +140,10 @@ in dplyr extremely easy.</p>
     <tr>
       <th>connection</th>
       <td><p>an sql connection</p></td>
+    </tr>
+    <tr>
+      <th>schema</th>
+      <td><p>string vector: the database schema targeted</p></td>
     </tr>
     </table>
 

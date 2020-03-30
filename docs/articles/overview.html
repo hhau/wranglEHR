@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>An overview of inspectEHR • wranglEHR</title>
+<title>An overview of wranglEHR • wranglEHR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="An overview of inspectEHR">
+<script src="../pkgdown.js"></script><meta property="og:title" content="An overview of wranglEHR">
 <meta property="og:description" content="">
 <meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
@@ -61,10 +61,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/extract_data.html">How to extract data using inspectEHR</a>
+      <a href="../articles/extract_data.html">How to extract data using wranglEHR</a>
     </li>
     <li>
-      <a href="../articles/overview.html">An overview of inspectEHR</a>
+      <a href="../articles/overview.html">An overview of wranglEHR</a>
     </li>
   </ul>
 </li>
@@ -82,7 +82,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>An overview of inspectEHR</h1>
+      <h1>An overview of wranglEHR</h1>
                         <h4 class="author">Edward Palmer</h4>
             
             <h4 class="date">2020-03-30</h4>
@@ -94,9 +94,7 @@
 
     
     
-<p>inspectEHR is a quality assurance tool for the CC-HIC project. The goal of this package is to provide a core set of functions to highlight erroneous or otherwise questionable data within CC-HIC, so the end researcher can handle this information explicitly.</p>
-<p>This information is subseqently written out to the database for future use, so that downstream research can use a consistent set of rules. A report is also generated.</p>
-<p>Helper functions for wrangling data have been developed and can be viewed in the other vignette. These will be ported over to cleanEHR shortly, after the codecov is higher, and unit tests have been written.</p>
+<p>wranglEHR is a data extraction tool for EMAP. It is a fork of the inspectEHR package for CC-HIC. The goal of this package is to provide a core set of functions to easily and reliably extract data from an OMOP CDM version 5.3.1, and to arrange it in a format that would be expected by statistical software. This is primarily for ease of use, but also has advantages in making a common part of the analytical pipeline reproducible for a large number of people.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

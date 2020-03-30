@@ -63,10 +63,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/extract_data.html">How to extract data using inspectEHR</a>
+      <a href="articles/extract_data.html">How to extract data using wranglEHR</a>
     </li>
     <li>
-      <a href="articles/overview.html">An overview of inspectEHR</a>
+      <a href="articles/overview.html">An overview of wranglEHR</a>
     </li>
   </ul>
 </li>
@@ -128,7 +128,7 @@
 <a class="sourceLine" id="cb2-16" data-line-number="16">  <span class="dt">target_schema =</span> <span class="st">"ops_dev"</span>,</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17">  <span class="dt">visit_occurrence_ids =</span> <span class="dv">600000</span><span class="op">:</span><span class="dv">600005</span>,</a>
 <a class="sourceLine" id="cb2-18" data-line-number="18">  <span class="dt">concept_names =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3013502</span>, <span class="dv">44809212</span>),</a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">  <span class="dt">rename =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"spo2"</span>, <span class="st">"spo2_target"</span>),</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">  <span class="dt">relabel =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"spo2"</span>, <span class="st">"spo2_target"</span>),</a>
 <a class="sourceLine" id="cb2-20" data-line-number="20">  <span class="dt">coalesce_rows =</span> dplyr<span class="op">::</span>first,</a>
 <a class="sourceLine" id="cb2-21" data-line-number="21">  <span class="dt">chunk_size =</span> <span class="dv">5000</span>,</a>
 <a class="sourceLine" id="cb2-22" data-line-number="22">  <span class="dt">cadance =</span> <span class="dv">1</span></a>
@@ -136,8 +136,15 @@
 <a class="sourceLine" id="cb2-24" data-line-number="24"></a>
 <a class="sourceLine" id="cb2-25" data-line-number="25"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(ltb)</a>
 <a class="sourceLine" id="cb2-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co"># Don't forget to switch of the lights after you leave</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(ctn)</a></code></pre></div>
+<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co"># Add in bed movement data</span></a>
+<a class="sourceLine" id="cb2-28" data-line-number="28">ltb &lt;-<span class="st"> </span><span class="kw"><a href="reference/attach_locations.html">attach_locations</a></span>(ctn, ltb)</a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(ltb)</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"><span class="co"># Regularise the underlying time cadance of the table</span></a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">ltb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/wranglEHR/man/regularise.html">regularise</a></span>(ltb, <span class="dt">cadance =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb2-34" data-line-number="34"><span class="co"># Don't forget to switch of the lights after you leave</span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html">dbDisconnect</a></span>(ctn)</a></code></pre></div>
 </div>
 <div id="getting-help" class="section level2">
 <h2 class="hasAnchor">

@@ -6,38 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Extract &amp; Reshape Data from EMAP
-
-This is the workhorse function that transcribes data from EMAP OPS from OMOP 
-CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
-row per time per patient.
-
-The time unit is user definable, and set by the "cadance" argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.
-
-Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.
-
-Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.
-
-The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour. — extract • wranglEHR</title>
+<title>Extract &amp; Reshape Data from EMAP — extract • wranglEHR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -73,65 +42,10 @@ intensional behaviour. — extract • wranglEHR</title>
 
 
 
-<meta property="og:title" content="Extract &amp; Reshape Data from EMAP
-
-This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+<meta property="og:title" content="Extract &amp; Reshape Data from EMAP — extract" />
+<meta property="og:description" content="This is the workhorse function that transcribes data from EMAP OPS from OMOP 
 CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
-row per time per patient.
-
-The time unit is user definable, and set by the "cadance" argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.
-
-Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.
-
-Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.
-
-The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour. — extract" />
-<meta property="og:description" content="Extract &amp;amp; Reshape Data from EMAP
-This is the workhorse function that transcribes data from EMAP OPS from OMOP 
-CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
-row per time per patient.
-The time unit is user definable, and set by the &quot;cadance&quot; argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.
-Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.
-Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.
-The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour." />
+row per time per patient." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -188,10 +102,10 @@ intensional behaviour." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/extract_data.html">How to extract data using inspectEHR</a>
+      <a href="../articles/extract_data.html">How to extract data using wranglEHR</a>
     </li>
     <li>
-      <a href="../articles/overview.html">An overview of inspectEHR</a>
+      <a href="../articles/overview.html">An overview of wranglEHR</a>
     </li>
   </ul>
 </li>
@@ -211,70 +125,15 @@ intensional behaviour." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Extract &amp; Reshape Data from EMAP
-
-This is the workhorse function that transcribes data from EMAP OPS from OMOP 
-CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
-row per time per patient.
-
-The time unit is user definable, and set by the "cadance" argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.
-
-Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.
-
-Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.
-
-The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour.</h1>
+    <h1>Extract &amp; Reshape Data from EMAP</h1>
     
     <div class="hidden name"><code>extract.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Extract &amp; Reshape Data from EMAP</p>
-<p>This is the workhorse function that transcribes data from EMAP OPS from OMOP 
+    <p>This is the workhorse function that transcribes data from EMAP OPS from OMOP 
 CDM 5.3.1 to a standard rectangular table with 1 column per dataitem and 1
 row per time per patient.</p>
-<p>The time unit is user definable, and set by the "cadance" argument. The
-default behaviour is to produce a table with 1 row per hour per patient. If
-there are duplicates/conflicts (e.g more than 1 event for a given hour), then
-the default behaviour is that only the first result for that hour is
-returned. One can override this behvaiour by supplying a vector of summary
-functions directly to the 'coalesce_rows' argument. This could also include
-any custom function written by the end user, so long as it takes a vector of
-length n, and returns a vector of length 1, of the original data type.</p>
-<p>Many events inside EMAP occur on a greater than hourly basis. Depending
-upon the chosen analysis, you may which to increase the cadance. 0.5 for
-example will produce a table with 1 row per 30 minutes per patient. Counter
-to this, 24 would produce 1 row per 24 hours.</p>
-<p>Choose what variables you want to pull out wisely. This function is quite
-efficient considering what it needs to do, but it can take a very long
-time if extracting lots of data, and doing so repeatedly. It is a strong 
-recomendation that you run your extraction on a small subset of patients
-first and check that you are happy with the result, before moving to a larger
-extraction.</p>
-<p>The current implementation is focussed on in-patients only. And as such, all
-dataitems are referenced to the visit_start_datetime of the visit_occurrence.
-Thus, observations and measurements recorded outside the boudaries of the
-visit_occurrence are automatically removed. This is - at this stage -
-intensional behaviour.</p>
     </div>
 
     <pre class="usage"><span class='fu'>extract</span>(
@@ -282,7 +141,7 @@ intensional behaviour.</p>
   <span class='no'>target_schema</span>,
   <span class='kw'>visit_occurrence_ids</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>concept_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>rename</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>relabel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>coalesce_rows</span> <span class='kw'>=</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='no'><a href='https://dplyr.tidyverse.org/reference/nth.html'>first</a></span>,
   <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>5000</span>,
   <span class='kw'>cadance</span> <span class='kw'>=</span> <span class='fl'>1</span>
@@ -309,7 +168,7 @@ intensional behaviour.</p>
       <td><p>a vector of OMOP concept_ids to be extracted</p></td>
     </tr>
     <tr>
-      <th>rename</th>
+      <th>relabel</th>
       <td><p>a character vector of names you want to relabel OMOP codes
 as, or NULL (the default) if you do not want to relabel. Given in the same
 order as <code>concept_names</code></p></td>
@@ -340,6 +199,31 @@ cautiously.</p></td>
 
     <p>sparse tibble with hourly cadance as rows, and unique OMOP concepts
   as columns.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>The time unit is user definable, and set by the "cadance" argument. The
+default behaviour is to produce a table with 1 row per hour per patient. If
+there are duplicates/conflicts (e.g more than 1 event for a given hour), then
+the default behaviour is that only the first result for that hour is
+returned. One can override this behvaiour by supplying a vector of summary
+functions directly to the 'coalesce_rows' argument. This could also include
+any custom function written by the end user, so long as it takes a vector of
+length n, and returns a vector of length 1, of the original data type.</p>
+<p>Many events inside EMAP occur on a greater than hourly basis. Depending
+upon the chosen analysis, you may which to increase the cadance. 0.5 for
+example will produce a table with 1 row per 30 minutes per patient. Counter
+to this, 24 would produce 1 row per 24 hours.</p>
+<p>Choose what variables you want to pull out wisely. This function is quite
+efficient considering what it needs to do, but it can take a very long
+time if extracting lots of data, and doing so repeatedly. It is a strong 
+recomendation that you run your extraction on a small subset of patients
+first and check that you are happy with the result, before moving to a larger
+extraction.</p>
+<p>The current implementation is focussed on in-patients only. And as such, all
+dataitems are referenced to the visit_start_datetime of the visit_occurrence.
+Thus, observations and measurements recorded outside the boudaries of the
+visit_occurrence are automatically removed. This is - at this stage -
+intensional behaviour.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -347,6 +231,7 @@ cautiously.</p></td>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       <li><a href="#value">Value</a></li>
+      <li><a href="#details">Details</a></li>
     </ul>
 
   </div>

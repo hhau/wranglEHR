@@ -1,9 +1,14 @@
-#' Add movement data to extracted table
+#' Add bed movement data to an extracted table
+#' 
+#' Takes a table created by \code{\link{extract}} and adds bed movement data.
 #'
 #' @param connection a EMAP database connection
 #' @param ltb a time series table produced from \code{\link{extract}}
+#' 
+#' @importFrom dplyr filter select collect rename left_join mutate full_join
+#'   arrange
 #'
-#' @return a time series table with location data appendewd
+#' @return a time series table with location data appended
 #' @export
 attach_locations <- function(connection, ltb) {
   
@@ -27,13 +32,11 @@ attach_locations <- function(connection, ltb) {
     collect() %>%
     rename(vd_start = visit_start_datetime)
   
-  ltb <- left_join(vo, vd, by = "visit_occurrence_id") %>%
+  left_join(vo, vd, by = "visit_occurrence_id") %>%
     mutate(time = round(
       as.numeric(
         difftime(vd_start, vo_start, units = "hours")), digits = 1)) %>%
     select(person_id, time, visit_occurrence_id, care_site_name, time) %>%
     full_join(ltb, by = c("time", "visit_occurrence_id")) %>%
     arrange(person_id, visit_occurrence_id, time)
-  
-  return(ltb)
 }

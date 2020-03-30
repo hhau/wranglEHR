@@ -4,15 +4,16 @@
 \alias{retrieve_tables}
 \title{Retrieve Database Tables}
 \usage{
-retrieve_tables(connection, schema)
+retrieve_tables(connection, schema = "ops_dev")
 }
 \arguments{
 \item{connection}{an sql connection}
+
+\item{schema}{string vector: the database schema targeted}
 }
 \value{
 a list containing pointers to tables within the sql connection.
 }
 \description{
-Places all tables from the database connection in a list. This makes use of the tables
-in dplyr extremely easy.
+Places all tables from the database connection in a list.
 }

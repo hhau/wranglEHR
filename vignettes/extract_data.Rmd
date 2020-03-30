@@ -1,5 +1,5 @@
 ---
-title: "How to extract data using inspectEHR"
+title: "How to extract data using wranglEHR"
 author: "Edward Palmer"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,91 +16,50 @@ knitr::opts_chunk$set(
 )
 ```
 
-inspectEHR contains a number of helper functions for wrangling data. In due course, these will be ported over to cleanEHR to keep the roles of the two packages clear; in theory cleanEHR = cleaning/wrangling, inspectEHR = verification/validation.
-
-First, install inspectEHR from github, or download the dev release directly.
+First, install wranglEHR from github, or download the dev release directly.
 
 ```{r, eval = FALSE}
-# If you need inspectEHR
-remotes::install_github("CC-HIC/inspectEHR")
+remotes::install_github("inform-health-informatics/wranglEHR")
 ```
 
-Establish a database connection. You will most likely be working with sqlite as the postgres instance is confined to the UCL IDHS. inspectEHR ships with a synthetic database, that you can play around with. The content of the data is more or less nonsense, but it is structurally sound.
+Establish a database connection. WranglEHR is optimised for EMAP, but you can technically connect it to any OMOP CDM version 5.3.1.
 
 ```{r, message = FALSE, eval = FALSE}
-library(inspectEHR)
-
-# Synthetic database ships with inspectEHR
-db_pth <- system.file("testdata/synthetic_db.sqlite3", package = "inspectEHR")
-ctn <- connect(sqlite_file = db_pth)
+library(wranglEHR)
+ctn <- ctn <- DBI::dbConnect(
+  RPostgres::Postgres(),
+  host = "****", # Host target for the UDS
+  port = 5432,
+  user = "****",
+  password = rstudioapi::askForPassword(),
+  dbname = "uds")
 ```
 
-Enter the fields you want to extract using HIC codes. See the cleanEHR repo for more information on these codes. Alternately, the `qref` object from inspectEHR contrains all the information on what data exists in CC-HIC. I write this here as a tribble to keep everything in the same document. If you want to rename column names then it is important to keep names and code names together and in the same order.
+Enter the fields you want to extract using OMOP concept ids. See Athena for more information on these codes. Alternately, the `mdata` object from wranglEHR contains all the information on what data is currently expressed in EMAP. There are additional concept tables inside the database itself.
 
-It's best to separate out 1d (time invariant) and 2d (longitudinal) data.
+I write this here as a tribble to keep everything in the same document. If you want to rename column names then it is important to keep names and code names together and in the same order. A column containing a summary function is added. This summary function will come in to action when there are more data points than rows, and thus a summary is necessary.
 
 ```{r, eval = FALSE}
-# Grab non-longitudinal (1d) data ----------------
-demo_codes <- tibble::tribble(
-  ~hic_codes, ~short_name,
-  "NIHR_HIC_ICU_0399", "primary_admission_reason",
-  "NIHR_HIC_ICU_0097", "unit_mortality",
+my_codes <- tibble::tribble(
+  ~concept_codes, ~short_name, ~summary_func
+  3013502, "spo2", min,
+  44809212, "spo2_target", min
 )
 
-# Extract static variables. Rename on the fly.
-dtb <- extract_demographics(
+ltb <- extract(
   connection = ctn,
-  episode_ids = 13639:13643,
-  code_names = demo_codes$hic_codes,
-  rename = demo_codes$short_name
+  target_schema = "ops_dev",
+  visit_occurrence_ids = 600000:600005,
+  concept_names = my_codes$concept_codes,
+  relabel = my_codes$short_name,
+  coalesce_rows = my_codes$summary_func,
+  chunk_size = 5000,
+  cadance = 1
 )
 
-head(dtb)
+ltb
 ```
 
-We can now extact 2d data. This will return a table with 1 row per patient per time unit specified in the cadance option. For example, a cadance of 1 will return a table with 1 row per patient per hour. This does not create a row if nothing was recorded, so the rows might run: 1, 2, 4, if nothing was recorded in hour 3. Note how a summary function can be provided to `coalese_rows`. This determines the behaviour when collapsing dataitems down into rows below the natural cadance of recording.
+This will return a table with 1 row per patient per time unit specified in the cadance option. For example, a cadance of 1 will return a table with 1 row per patient per hour. This does not create a row if nothing was recorded, so the rows might run: 1, 2, 4, if nothing was recorded in hour 3. Note how a summary function can be provided to `coalese_rows`. This determines the behaviour when collapsing dataitems down into rows below the natural cadance of recording.
 
-```{r, eval = FALSE}
-# Grab longitudinal (2d) data ---------------------
-long_codes <- tibble::tribble(
-  ~hic_codes, ~short_name, ~func,
-  "NIHR_HIC_ICU_0108", "hr", mean
-  )
-
-# Extract time varying variables. Rename on the fly.
-ltb <- extract_timevarying(
-  ctn,
-  episode_ids = 13639:13643,
-  code_names = long_codes$hic_codes,
-  rename = long_codes$short_name,
-  coalesce_rows = long_codes$func
-  )
-
-head(ltb)
-```
-
-Depending upon how much data you want to pull into a long form for analysis, this can take considerable time (more than 24 hours if you want to convert all 50,000 episodes).
-
-You can expand this table to a regular row cadance, by inserting rows of NAs with `expand_missing`
-
-```r
-ltb <- expand_missing(ltb)
-```
-
-We can also pull out data at any arbitrary temporal resolution and custom define the behaviour for information recorded at resolution higher than you are sampling. For example, if heart rates are sampled every hour, and you want to pull out data every 6 hours, we need to know what action to take to collapse those heart rates into a single row. You can supply any custom summary function to the `coalese_rows` argument of `extract_timevarying`.
-
-```{r, message = FALSE, eval = FALSE}
-ltb_2 <- extract_timevarying(
-  ctn,
-  episode_ids = 13639:13643,
-  code_names = long_codes$hic_codes,
-  rename = long_codes$short_name,
-  cadance = 6, # 1 row every 6 hours
-  coalesce_rows = long_codes$func
-  )
-
-head(ltb_2)
-DBI::dbDisconnect(ctn)
-```
-
-You can also run `extract_timevarying` with the option of cadance = "timestamp" which both pull out the exact timing of events and labels them with their timestamp. I advise against this unless you have a specific requirement, as it is a very memory intensive task.
+Depending upon how much data you want to pull into a long form for analysis, this can take considerable time. Choose carefully, and do a test run on a small number of cases first. The `chunk_size` option can be useful if you are encountering performance issues.
