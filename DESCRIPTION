@@ -1,4 +1,4 @@
-Package: wrangleEHR
+Package: wranglEHR
 Type: Package
 Title: A data wrangling tool for EMAP
 Version: 0.1.9000

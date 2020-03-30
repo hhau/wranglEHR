@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to extract data using inspectEHR • wrangleEHR</title>
+<title>How to extract data using inspectEHR • wranglEHR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -37,7 +37,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">wrangleEHR</a>
+        <a class="navbar-link" href="../index.html">wranglEHR</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9000</span>
       </span>
     </div>
@@ -141,7 +141,7 @@
 <a class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(ltb)</a></code></pre></div>
 <p>Depending upon how much data you want to pull into a long form for analysis, this can take considerable time (more than 24 hours if you want to convert all 50,000 episodes).</p>
 <p>You can expand this table to a regular row cadance, by inserting rows of NAs with <code>expand_missing</code></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">ltb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/expand_missing.html">expand_missing</a></span>(ltb)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">ltb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/expand_missing.html">expand_missing</a></span>(ltb)</a></code></pre></div>
 <p>We can also pull out data at any arbitrary temporal resolution and custom define the behaviour for information recorded at resolution higher than you are sampling. For example, if heart rates are sampled every hour, and you want to pull out data every 6 hours, we need to know what action to take to collapse those heart rates into a single row. You can supply any custom summary function to the <code>coalese_rows</code> argument of <code>extract_timevarying</code>.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ltb_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/extract_timevarying.html">extract_timevarying</a></span>(</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">  ctn,</a>

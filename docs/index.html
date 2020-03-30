@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A data wrangling tool for EMAP • wrangleEHR</title>
+<title>A data wrangling tool for EMAP • wranglEHR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -39,7 +39,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">wrangleEHR</a>
+        <a class="navbar-link" href="index.html">wranglEHR</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9000</span>
       </span>
     </div>
@@ -95,7 +95,7 @@
 <p>wranglEHR is a data wrangling tool for EMAP. It is designed to run against OMOP CDM 5.3.1. Please see the <code>R</code> vignettes for further details on how to use the package to perform the most common tasks:</p>
 <ul>
 <li>
-<code>extract()</code> produces a rectangular table in a “long” format that is suitable for most statistial packages.</li>
+<code><a href="reference/extract.html">extract()</a></code> produces a rectangular table in a “long” format that is suitable for most statistial packages.</li>
 <li>
 <code>clean()</code> cleans the above table in accordance with pre-defined standards (pending)</li>
 </ul>
@@ -123,7 +123,7 @@
 <a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># Extract variables.</span></a>
 <a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># Rename on the fly.</span></a>
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># Dynamically set time cadance.</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">ltb &lt;-<span class="st"> </span><span class="kw">extract</span>(</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">ltb &lt;-<span class="st"> </span><span class="kw"><a href="reference/extract.html">extract</a></span>(</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15">  <span class="dt">connection =</span> ctn,</a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">  <span class="dt">target_schema =</span> <span class="st">"ops_dev"</span>,</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17">  <span class="dt">visit_occurrence_ids =</span> <span class="dv">600000</span><span class="op">:</span><span class="dv">600005</span>,</a>
