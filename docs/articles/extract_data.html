@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>How to extract data using inspectEHR • inspectEHR</title>
+<title>How to extract data using inspectEHR • wrangleEHR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -37,8 +37,8 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">inspectEHR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.11.9000</span>
+        <a class="navbar-link" href="../index.html">wrangleEHR</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9000</span>
       </span>
     </div>
 
@@ -69,14 +69,7 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/CC-HIC/inspectEHR">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -94,7 +87,7 @@
             
             <h4 class="date">2020-03-30</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/CC-HIC/inspectEHR/blob/master/vignettes/extract_data.Rmd"><code>vignettes/extract_data.Rmd</code></a></small>
+      
       <div class="hidden name"><code>extract_data.Rmd</code></div>
 
     </div>
@@ -110,7 +103,7 @@
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># Synthetic database ships with inspectEHR</span></a>
 <a class="sourceLine" id="cb2-4" data-line-number="4">db_pth &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"testdata/synthetic_db.sqlite3"</span>, <span class="dt">package =</span> <span class="st">"inspectEHR"</span>)</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">ctn &lt;-<span class="st"> </span><span class="kw">connect</span>(<span class="dt">sqlite_file =</span> db_pth)</a></code></pre></div>
+<a class="sourceLine" id="cb2-5" data-line-number="5">ctn &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/connect.html">connect</a></span>(<span class="dt">sqlite_file =</span> db_pth)</a></code></pre></div>
 <p>Enter the fields you want to extract using HIC codes. See the cleanEHR repo for more information on these codes. Alternately, the <code>qref</code> object from inspectEHR contrains all the information on what data exists in CC-HIC. I write this here as a tribble to keep everything in the same document. If you want to rename column names then it is important to keep names and code names together and in the same order.</p>
 <p>It’s best to separate out 1d (time invariant) and 2d (longitudinal) data.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Grab non-longitudinal (1d) data ----------------</span></a>
@@ -121,7 +114,7 @@
 <a class="sourceLine" id="cb3-6" data-line-number="6">)</a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co"># Extract static variables. Rename on the fly.</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9">dtb &lt;-<span class="st"> </span><span class="kw">extract_demographics</span>(</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9">dtb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/extract_demographics.html">extract_demographics</a></span>(</a>
 <a class="sourceLine" id="cb3-10" data-line-number="10">  <span class="dt">connection =</span> ctn,</a>
 <a class="sourceLine" id="cb3-11" data-line-number="11">  <span class="dt">episode_ids =</span> <span class="dv">13639</span><span class="op">:</span><span class="dv">13643</span>,</a>
 <a class="sourceLine" id="cb3-12" data-line-number="12">  <span class="dt">code_names =</span> demo_codes<span class="op">$</span>hic_codes,</a>
@@ -137,7 +130,7 @@
 <a class="sourceLine" id="cb4-5" data-line-number="5">  )</a>
 <a class="sourceLine" id="cb4-6" data-line-number="6"></a>
 <a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co"># Extract time varying variables. Rename on the fly.</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">ltb &lt;-<span class="st"> </span><span class="kw">extract_timevarying</span>(</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">ltb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/extract_timevarying.html">extract_timevarying</a></span>(</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">  ctn,</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">  <span class="dt">episode_ids =</span> <span class="dv">13639</span><span class="op">:</span><span class="dv">13643</span>,</a>
 <a class="sourceLine" id="cb4-11" data-line-number="11">  <span class="dt">code_names =</span> long_codes<span class="op">$</span>hic_codes,</a>
@@ -148,9 +141,9 @@
 <a class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(ltb)</a></code></pre></div>
 <p>Depending upon how much data you want to pull into a long form for analysis, this can take considerable time (more than 24 hours if you want to convert all 50,000 episodes).</p>
 <p>You can expand this table to a regular row cadance, by inserting rows of NAs with <code>expand_missing</code></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">ltb &lt;-<span class="st"> </span><span class="kw"><a href="../reference/expand_missing.html">expand_missing</a></span>(ltb)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">ltb &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/expand_missing.html">expand_missing</a></span>(ltb)</a></code></pre></div>
 <p>We can also pull out data at any arbitrary temporal resolution and custom define the behaviour for information recorded at resolution higher than you are sampling. For example, if heart rates are sampled every hour, and you want to pull out data every 6 hours, we need to know what action to take to collapse those heart rates into a single row. You can supply any custom summary function to the <code>coalese_rows</code> argument of <code>extract_timevarying</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ltb_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">extract_timevarying</span>(</a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ltb_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/pkg/inspectEHR/man/extract_timevarying.html">extract_timevarying</a></span>(</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">  ctn,</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">episode_ids =</span> <span class="dv">13639</span><span class="op">:</span><span class="dv">13643</span>,</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4">  <span class="dt">code_names =</span> long_codes<span class="op">$</span>hic_codes,</a>

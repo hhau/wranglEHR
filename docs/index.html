@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Quality Reporting for CC-HIC • inspectEHR</title>
+<title>A data wrangling tool for EMAP • wrangleEHR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -16,12 +16,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="Data Quality Reporting for CC-HIC">
-<meta property="og:description" content="This package helps to produce data quality reports for CC-HIC.
-    This consists of data wrangling, cleaning, verification and validation.
-    There are a lot of helper functions that have been written to facilitate
-    data wrangling and cleaning. These need to be separated and ported to
-    cleanEHR in due course.">
+<script src="pkgdown.js"></script><meta property="og:title" content="A data wrangling tool for EMAP">
+<meta property="og:description" content="wranglEHR is a data wrangling tool for EMAP. It is designed to run
+    against OMOP CDM 5.3.1. There are some helper functions that have been
+    written to facilitate data wrangling and cleaning.">
 <meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -41,8 +39,8 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">inspectEHR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.11.9000</span>
+        <a class="navbar-link" href="index.html">wrangleEHR</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9000</span>
       </span>
     </div>
 
@@ -73,14 +71,7 @@
   </ul>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right">
-<li>
-  <a href="https://github.com/CC-HIC/inspectEHR">
-    <span class="fab fa fab fa-github fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
+<ul class="nav navbar-nav navbar-right"></ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -104,7 +95,7 @@
 <p>wranglEHR is a data wrangling tool for EMAP. It is designed to run against OMOP CDM 5.3.1. Please see the <code>R</code> vignettes for further details on how to use the package to perform the most common tasks:</p>
 <ul>
 <li>
-<code><a href="reference/extract.html">extract()</a></code> produces a rectangular table in a “long” format that is suitable for most statistial packages.</li>
+<code>extract()</code> produces a rectangular table in a “long” format that is suitable for most statistial packages.</li>
 <li>
 <code>clean()</code> cleans the above table in accordance with pre-defined standards (pending)</li>
 </ul>
@@ -132,7 +123,7 @@
 <a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># Extract variables.</span></a>
 <a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># Rename on the fly.</span></a>
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># Dynamically set time cadance.</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">ltb &lt;-<span class="st"> </span><span class="kw"><a href="reference/extract.html">extract</a></span>(</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">ltb &lt;-<span class="st"> </span><span class="kw">extract</span>(</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15">  <span class="dt">connection =</span> ctn,</a>
 <a class="sourceLine" id="cb2-16" data-line-number="16">  <span class="dt">target_schema =</span> <span class="st">"ops_dev"</span>,</a>
 <a class="sourceLine" id="cb2-17" data-line-number="17">  <span class="dt">visit_occurrence_ids =</span> <span class="dv">600000</span><span class="op">:</span><span class="dv">600005</span>,</a>
@@ -160,9 +151,7 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/CC-HIC/inspectEHR">https://​github.com/​CC-HIC/​inspectEHR</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/CC-HIC/inspectEHR">https://​github.com/​CC-HIC/​inspectEHR</a>
+<li>Report a bug at <br><a href="https://github.com/inform-health-informatics/wranglEHR/issues/">https://​github.com/​inform-health-informatics/​wranglEHR/​issues/​</a>
 </li>
 </ul>
 </div>
