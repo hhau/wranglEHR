@@ -144,7 +144,8 @@ row per time per patient.</p>
   <span class='kw'>relabel</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>coalesce_rows</span> <span class='kw'>=</span> <span class='kw pkg'>dplyr</span><span class='kw ns'>::</span><span class='no'><a href='https://dplyr.tidyverse.org/reference/nth.html'>first</a></span>,
   <span class='kw'>chunk_size</span> <span class='kw'>=</span> <span class='fl'>5000</span>,
-  <span class='kw'>cadance</span> <span class='kw'>=</span> <span class='fl'>1</span>
+  <span class='kw'>cadance</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>dttmstamp</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -192,6 +193,13 @@ each row, in divisions of an hour. For example: 1 = 1 hour, 0.5 = 30 mins,
 2 = 2 hourly. If cadance = 0, then the pricise datetime will be used to
 generate the time column. This is likely to generate a large table, so use
 cautiously.</p></td>
+    </tr>
+    <tr>
+      <th>timestamp</th>
+      <td><p>logical scalar. Default FALSE. If TRUE the `time` column
+will present as a timestamp instead of time from admission. In this
+instance the `cadance` argument controls the roundings of the timestamp
+with 2 options: 1 = round to nearest hour, 2 = do not round.</p></td>
     </tr>
     </table>
 

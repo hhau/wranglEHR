@@ -4,7 +4,14 @@
 \alias{process_all}
 \title{Process all concepts within a group of visit_occurrences}
 \usage{
-process_all(visit_id, dataitems, visit_table, cadance, coalesce_rows)
+process_all(
+  visit_id,
+  dataitems,
+  visit_table,
+  cadance,
+  coalesce_rows,
+  dttmstamp
+)
 }
 \arguments{
 \item{visit_id}{the visit_occurence_id to process}

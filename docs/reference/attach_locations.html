@@ -43,7 +43,9 @@
 
 
 <meta property="og:title" content="Add bed movement data to an extracted table — attach_locations" />
-<meta property="og:description" content="Takes a table created by extract and adds bed movement data." />
+<meta property="og:description" content="Takes a table created by extract and adds bed movement data.
+Please be aware, this may duplicate rows, if for example a patient moves
+several beds in the same hour." />
 <meta property="og:image" content="/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -129,7 +131,9 @@
     </div>
 
     <div class="ref-description">
-    <p>Takes a table created by <code><a href='extract.html'>extract</a></code> and adds bed movement data.</p>
+    <p>Takes a table created by <code><a href='extract.html'>extract</a></code> and adds bed movement data.
+Please be aware, this may duplicate rows, if for example a patient moves
+several beds in the same hour.</p>
     </div>
 
     <pre class="usage"><span class='fu'>attach_locations</span>(<span class='no'>connection</span>, <span class='no'>ltb</span>)</pre>

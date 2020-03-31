@@ -12,7 +12,8 @@ extract(
   relabel = NULL,
   coalesce_rows = dplyr::first,
   chunk_size = 5000,
-  cadance = 1
+  cadance = 1,
+  dttmstamp = FALSE
 )
 }
 \arguments{
@@ -42,6 +43,11 @@ each row, in divisions of an hour. For example: 1 = 1 hour, 0.5 = 30 mins,
 2 = 2 hourly. If cadance = 0, then the pricise datetime will be used to
 generate the time column. This is likely to generate a large table, so use
 cautiously.}
+
+\item{timestamp}{logical scalar. Default FALSE. If TRUE the `time` column
+will present as a timestamp instead of time from admission. In this
+instance the `cadance` argument controls the roundings of the timestamp
+with 2 options: 1 = round to nearest hour, 2 = do not round.}
 }
 \value{
 sparse tibble with hourly cadance as rows, and unique OMOP concepts

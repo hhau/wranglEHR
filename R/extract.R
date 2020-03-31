@@ -50,6 +50,10 @@
 #'   2 = 2 hourly. If cadance = 0, then the pricise datetime will be used to
 #'   generate the time column. This is likely to generate a large table, so use
 #'   cautiously.
+#' @param timestamp logical scalar. Default FALSE. If TRUE the `time` column
+#'   will present as a timestamp instead of time from admission. In this
+#'   instance the `cadance` argument controls the roundings of the timestamp
+#'   with 2 options: 1 = round to nearest hour, 2 = do not round.
 #'
 #' @return sparse tibble with hourly cadance as rows, and unique OMOP concepts
 #'   as columns.
@@ -57,7 +61,7 @@
 #' @export
 #'
 #' @importFrom purrr map imap
-#' @importFrom lubridate now
+#' @importFrom lubridate now ymd_hms
 #' @importFrom rlang inform abort .data
 #' @importFrom dplyr first mutate select filter collect rename bind_rows n
 #' @importFrom magrittr %>%
@@ -69,7 +73,8 @@ extract <- function(connection,
                     relabel = NULL,
                     coalesce_rows = dplyr::first,
                     chunk_size = 5000,
-                    cadance = 1) {
+                    cadance = 1,
+                    dttmstamp = FALSE) {
 
   starting <- now()
   tbls <- retrieve_tables(connection, target_schema)
@@ -126,6 +131,12 @@ extract <- function(connection,
             concept_id = observation_concept_id
           )
         
+        if (nrow(observations) == 0) {
+          no_observations <- TRUE
+        } else {
+          no_observations <- FALSE
+        }
+        
         measurements <- tbls[["measurement"]] %>%
           filter(measurement_concept_id %in% !!params$concept_names,
                  visit_occurrence_id %in% !!vd_group$visit_occurrence_id) %>%
@@ -143,6 +154,12 @@ extract <- function(connection,
             concept_id = measurement_concept_id
           )
         
+        if (nrow(measurements) == 0) {
+          no_measurements <- TRUE
+        } else {
+          no_measurements <- FALSE
+        }
+        
         all_dat <- bind_rows(observations, measurements)
         
         vd_group$visit_occurrence_id %>%
@@ -152,7 +169,8 @@ extract <- function(connection,
               dataitems = all_dat,
               visit_table = vd_group,
               cadance = cadance,
-              coalesce_rows = params
+              coalesce_rows = params,
+              dttmstamp = dttmstamp
             )
           ) %>%
           bind_rows()
@@ -200,7 +218,8 @@ process_all <- function(visit_id,
                         dataitems,
                         visit_table,
                         cadance,
-                        coalesce_rows) {
+                        coalesce_rows,
+                        dttmstamp) {
   
   visit_results <- dataitems %>%
     filter(visit_occurrence_id == visit_id)
@@ -210,26 +229,49 @@ process_all <- function(visit_id,
     select(visit_start_datetime) %>%
     pull()
   
-  visit_results %>%
-    arrange(concept_id) %>%
-    split(., .$concept_id) %>%
-    imap(
-      ~ process_item(
-        dataitem = .x,
-        var_name = .y,
-        start_time = start_time,
-        cadance = cadance,
-        coalesce_rows = coalesce_rows)
-    ) %>%
-    reduce(
-      full_join, by = "diff_time",
-      .init = tibble(diff_time = as.numeric(NULL))) %>%
-    rename(time = diff_time) %>%
-    mutate(visit_occurrence_id = visit_id) %>%
-    arrange(time)
+  if (dttmstamp) {
+    visit_results %>%
+      arrange(concept_id) %>%
+      split(., .$concept_id) %>%
+      imap(
+        ~ process_item_timestamp(
+          dataitem = .x,
+          var_name = .y,
+          cadance = cadance,
+          coalesce_rows = coalesce_rows)
+      ) %>%
+      reduce(
+        full_join, by = "datetime",
+        .init = tibble(datetime = ymd_hms())) %>%
+      rename(time = datetime) %>%
+      mutate(visit_occurrence_id = visit_id) %>%
+      arrange(time)
+  } else {
+    visit_results %>%
+      arrange(concept_id) %>%
+      split(., .$concept_id) %>%
+      imap(
+        ~ process_item_difftime(
+          dataitem = .x,
+          var_name = .y,
+          start_time = start_time,
+          cadance = cadance,
+          coalesce_rows = coalesce_rows)
+      ) %>%
+      reduce(
+        full_join, by = "diff_time",
+        .init = tibble(diff_time = as.numeric(NULL))) %>%
+      rename(time = diff_time) %>%
+      mutate(visit_occurrence_id = visit_id) %>%
+      arrange(time)
+  }
+  
+
 }
 
 #' Process a specific concept_id
+#' 
+#' Process a concept_id in relationship to the time of hospital admission.
 #'
 #' @param dataitem base table
 #' @param var_name concept_id
@@ -237,10 +279,11 @@ process_all <- function(visit_id,
 #' @param cadance base time cadance
 #' @param coalesce_rows summary function
 #' 
-#' @importFrom dplyr select filter pull mutate distinct rename
+#' @importFrom dplyr select filter pull mutate distinct rename group_by
+#'   summarise_at vars
 #' @importFrom rlang !! :=
 #' @importFrom magrittr %>%
-process_item <- function(dataitem,
+process_item_difftime <- function(dataitem,
                          var_name,
                          start_time,
                          cadance,
@@ -265,14 +308,69 @@ process_item <- function(dataitem,
   
   if (cadance > 0) {
     tb_a <- tb_a %>%
-      mutate(diff_time = round_any(diff_time, cadance))
+      mutate(diff_time = round_any(diff_time, cadance)) %>%
+      group_by(diff_time) %>%
+      summarise_at(vars(prim_col), summary_func)
+  } else {
+    tb_a <- tb_a %>%
+      mutate(diff_time = round_any(diff_time, cadance)) %>%
+      distinct(diff_time, .keep_all = TRUE)
   }
   
   tb_a %>%
-    distinct(diff_time, .keep_all = TRUE) %>%
     rename(!!var_name := prim_col) %>%
     select(diff_time, !!var_name)
+}
+
+
+#' Process a specific concept_id
+#' 
+#' Processes a concept_id retaining it's original timestamp
+#'
+#' @param dataitem base table
+#' @param var_name concept_id
+#' @param start_time start_datetime to zero from
+#' @param cadance base time cadance
+#' @param coalesce_rows summary function
+#' 
+#' @importFrom dplyr select filter pull mutate distinct rename group_by
+#'   summarise_at vars
+#' @importFrom rlang !! :=
+#' @importFrom magrittr %>%
+#' @importFrom lubridate round_date
+process_item_timestamp <- function(dataitem,
+                                  var_name,
+                                  cadance,
+                                  coalesce_rows) {
   
+  stopifnot(cadance %in% c(0, 1))
+  stopifnot(!is.na(dataitem$datetime))
+  
+  prim_col <- mdata %>%
+    filter(concept_id == var_name) %>%
+    select(target) %>%
+    pull()
+  
+  summary_func <- coalesce_rows %>%
+    filter(concept_names == var_name) %>%
+    select(func) %>%
+    pull() %>%
+    `[[`(1)
+  
+  if (cadance == 1) {
+    tb_a <- dataitem %>%
+      mutate(datetime = round_date(datetime, unit = "hour")) %>%
+      group_by(datetime) %>%
+      summarise_at(vars(prim_col), summary_func)
+  } else {
+    tb_a <- dataitem %>%
+      distinct(datetime, .keep_all = TRUE)
+  }
+  
+  tb_a %>%
+    rename(!!var_name := prim_col) %>%
+    select(datetime, !!var_name)
+
 }
 
 

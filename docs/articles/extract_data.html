@@ -85,7 +85,7 @@
       <h1>How to extract data using wranglEHR</h1>
                         <h4 class="author">Edward Palmer</h4>
             
-            <h4 class="date">2020-03-30</h4>
+            <h4 class="date">2020-03-31</h4>
       
       
       <div class="hidden name"><code>extract_data.Rmd</code></div>
@@ -95,7 +95,7 @@
     
     
 <p>First, install wranglEHR from github, or download the dev release directly.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"inform-health-informatics/wranglEHR"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">remotes<span class="op">::</span><span class="kw"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"inform-health-informatics/wranglEHR"</span>)</a></code></pre></div>
 <p>Establish a database connection. WranglEHR is optimised for EMAP, but you can technically connect it to any OMOP CDM version 5.3.1.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(wranglEHR)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">ctn &lt;-<span class="st"> </span>ctn &lt;-<span class="st"> </span>DBI<span class="op">::</span><span class="kw"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(</a>
